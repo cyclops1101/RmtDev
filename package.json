@@ -15,9 +15,7 @@
     "@types/node": "^20.11.27",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "sleep-promise": "^9.1.0",
-    "ts-node": "^10.9.2",
-    "zustand": "^4.5.2"
+    "react-hot-toast": "^2.4.1"
   },
   "devDependencies": {
     "@types/react": "18.2.15",

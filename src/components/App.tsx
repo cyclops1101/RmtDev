@@ -3,7 +3,7 @@ import Background from "./Background";
 import Container from "./Container";
 import Footer from "./Footer";
 import { Header, HeaderTop } from "./Header";
-import { useJobItems } from "../libs/hooks";
+import { useDebounce, useJobItems } from "../libs/hooks";
 import { Sidebar, SidebarTop } from "./Sidebar";
 import JobItemContent from "./JobItemContent";
 import ResultsCount from "./ResultsCount";
@@ -16,7 +16,10 @@ import PaginationControls from "./PaginationControls";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
-  const {jobItemsSliced, isLoading, totalResults} = useJobItems(searchTerm);
+  const deboucedSearchTerm = useDebounce(searchTerm, 500);
+  const { jobItems, isLoading } = useJobItems(deboucedSearchTerm);
+  const totalResults = jobItems.length;
+  const jobItemsSliced = jobItems.slice(0, 7);
 
   return (
     <>
@@ -31,7 +34,7 @@ function App() {
       <Container>
         <Sidebar>
           <SidebarTop>
-            <ResultsCount count={totalResults}/>
+            <ResultsCount count={totalResults} />
             <Sorting />
           </SidebarTop>
           <JobList jobItems={jobItemsSliced} isLoading={isLoading} />

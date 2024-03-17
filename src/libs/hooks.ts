@@ -1,45 +1,40 @@
 import { useEffect, useState } from "react";
-import { JobItem, JobItemDetail } from "./types";
 import { jobDetail, jobIndex } from "../services/searchApi";
+import { useQuery } from "@tanstack/react-query";
+import { handleError } from "./utils";
 
 export const useJobItems = (searchTerm: string) => {
-  const [jobItems, setJobItems] = useState<JobItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 250);
-  const totalResults = jobItems.length;
-
-  const jobItemsSliced = jobItems.slice(0, 7);
-  useEffect(() => {
-    if (!searchTerm) return;
-    setIsLoading(true);
-    const fetchData = async () => {
-      const data = await jobIndex(debouncedSearchTerm);
-      setJobItems(data.jobItems);
-      setIsLoading(false);
-    };
-    if (debouncedSearchTerm) {
-      fetchData();
+  const { data, isInitialLoading } = useQuery(
+    ["job-items", searchTerm],
+    async () => (searchTerm ? jobIndex(searchTerm) : null),
+    {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!searchTerm,
+      onError: handleError,
     }
-  }, [debouncedSearchTerm]);
+  );
+  const jobItems = data?.jobItems ?? [];
+  const isLoading = isInitialLoading;
 
-  return { jobItemsSliced, isLoading, totalResults } as const;
+  return { jobItems, isLoading } as const;
 };
 
 export const useJobItem = (id: number | null) => {
-  const [jobItem, setJobItem] = useState<JobItemDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    if (!id) return;
-    setIsLoading(true);
-    const fetchData = async () => {
-      const data = await jobDetail(id.toString());
-      setJobItem(data.jobItem);
-      setIsLoading(false);
-    };
-    fetchData();
-  }, [id]);
+  const { data, isInitialLoading } = useQuery(
+    ["job-item", id],
+    async () => (id ? jobDetail(id) : null),
+    {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!id,
+      onError: handleError,
+    }
+  );
+  const jobItem = data?.jobItem;
+  const isLoading = isInitialLoading;
 
   return [jobItem, isLoading] as const;
 };
