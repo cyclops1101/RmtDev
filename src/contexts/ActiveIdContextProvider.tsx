@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext} from "react";
 import { useActiveId } from "../libs/hooks";
 
 type ActiveIdContextType = {
@@ -18,8 +18,4 @@ export const ActiveIdProvider = ({ children }: ActiveIdProviderProps) => {
       {children}
     </ActiveIdContext.Provider>
   );
-};
-
-export const useActiveIdContext = () => {
-  return useContext(ActiveIdContext);
 };

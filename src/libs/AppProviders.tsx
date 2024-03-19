@@ -5,8 +5,8 @@ import { SearchTextContextProvider } from "../contexts/SearchTextContextProvider
 import JobItemsContextProvider from "../contexts/JobItemsContextProvider";
 
 type ProvidersProps = {
-    children: React.ReactNode;
-    };
+  children: React.ReactNode;
+};
 
 const queryClient = new QueryClient();
 

@@ -1,5 +1,5 @@
 import { createContext, useCallback, useMemo, useState } from "react";
-import { JobItem, JobItemDetail, PageDirection, SortBy } from "../libs/types";
+import { JobItem, PageDirection, SortBy } from "../libs/types";
 import { useSearchQuery, useSearchTextContext } from "../libs/hooks";
 import { RESULTS_PER_PAGE } from "../libs/constants";
 
@@ -31,8 +31,6 @@ export const JobItemsContext = createContext<JobItemsContextType>({
 
 type JobContextProviderProps = {
   children: React.ReactNode;
-  jobItems: JobItemDetail[];
-  totalResults: number;
 };
 
 export default function JobItemsContextProvider({

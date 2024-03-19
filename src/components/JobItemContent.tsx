@@ -1,4 +1,4 @@
-import { useActiveIdContext } from "../contexts/ActiveIdContextProvider";
+import { useActiveIdContext } from "../libs/hooks";
 import { useJobItem } from "../libs/hooks";
 import BookmarkIcon from "./BookmarkIcon";
 import Spinner from "./Spinner";
