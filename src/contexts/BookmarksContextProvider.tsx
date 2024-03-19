@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import { useJobItems, useLocalStorage } from "../libs/hooks";
 import { JobItemDetail } from "../libs/types";
 
@@ -9,7 +9,7 @@ type BookmarkContextType = {
   isLoading: boolean;
 };
 
-const BookmarkContext = createContext<BookmarkContextType>({
+export const BookmarkContext = createContext<BookmarkContextType>({
   bookmarkIds: [],
   handleToggleBookmark: () => {},
   bookmarkedJobs: [],
@@ -38,13 +38,14 @@ export default function BookmarkContextProvider({
 
   return (
     <BookmarkContext.Provider
-      value={{ bookmarkIds, handleToggleBookmark, bookmarkedJobs: jobItems, isLoading }}
+      value={{
+        bookmarkIds,
+        handleToggleBookmark,
+        bookmarkedJobs: jobItems,
+        isLoading,
+      }}
     >
       {children}
     </BookmarkContext.Provider>
   );
-}
-
-export function useBookmarkContext() {
-  return useContext(BookmarkContext);
 }

@@ -1,17 +1,13 @@
-import { SortBy } from "../libs/types";
+import { useJobItemsContext } from "../libs/hooks";
 
-type SortingProps = {
-  onSortChange: (sort: SortBy) => void;
-  sortBy: SortBy;
-};
-
-export default function Sorting({ onSortChange, sortBy }: SortingProps) {
+export default function Sorting() {
+  const { sortBy, handleChangeSortBy } = useJobItemsContext();
   return (
     <section className="sorting">
       <i className="fa-solid fa-arrow-down-short-wide"></i>
 
       <SortBtn
-        onClick={() => onSortChange("relevant")}
+        onClick={() => handleChangeSortBy("relevant")}
         conditionalStyles={
           sortBy === "relevant" ? "sorting__button--active" : ""
         }
@@ -19,7 +15,7 @@ export default function Sorting({ onSortChange, sortBy }: SortingProps) {
         Relevance
       </SortBtn>
       <SortBtn
-        onClick={() => onSortChange("date")}
+        onClick={() => handleChangeSortBy("date")}
         conditionalStyles={sortBy === "date" ? "sorting__button--active" : ""}
       >
         Recent

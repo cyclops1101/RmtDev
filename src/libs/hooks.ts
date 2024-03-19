@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { jobDetail, jobIndex } from "../services/searchApi";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { handleError } from "./utils";
 import { JobItemDetail } from "./types";
+import { ActiveIdContext } from "../contexts/ActiveIdContextProvider";
+import { SearchTextContext } from "../contexts/SearchTextContextProvider";
+import { JobItemsContext } from "../contexts/JobItemsContextProvider";
+import { BookmarkContext } from "../contexts/BookmarksContextProvider";
 
 export const useSearchQuery = (searchTerm: string) => {
   const { data, isInitialLoading } = useQuery(
@@ -52,10 +56,12 @@ export const useJobItems = (ids: number[]) => {
       onError: handleError,
     })),
   });
-  const jobItems = results.map((result) => result.data?.jobItem).filter(jobItem => jobItem !== undefined) as JobItemDetail[];
+  const jobItems = results
+    .map((result) => result.data?.jobItem)
+    .filter((jobItem) => jobItem !== undefined) as JobItemDetail[];
 
   const isLoading = results.some((result) => result.isLoading);
-  
+
   return { jobItems, isLoading } as const;
 };
 
@@ -75,14 +81,6 @@ export const useActiveId = () => {
   }, []);
 
   return activeId;
-};
-
-export const useActiveJobItem = () => {
-  const id = useActiveId();
-  const [jobItem, isLoading] = useJobItem(id);
-  if (!id) return [null, false] as const;
-
-  return [jobItem, isLoading] as const;
 };
 
 // utility hooks
@@ -112,4 +110,57 @@ export function useLocalStorage<T>(
   }, [value, key]);
 
   return [value, setValue] as const;
+}
+
+export function useOnClickOutside(
+  refs: React.RefObject<HTMLElement>[],
+  handler: (event: MouseEvent) => void
+) {
+  useEffect(() => {
+    const listener = (event: MouseEvent) => {
+      const shouldClose = refs.every((ref) => {
+        return ref.current && !ref.current.contains(event.target as Node);
+      });
+
+      if (shouldClose) handler(event);
+    };
+
+    document.addEventListener("mousedown", listener);
+    return () => {
+      document.removeEventListener("mousedown", listener);
+    };
+  }, [refs, handler]);
+}
+
+// context hooks
+export const useActiveIdContext = () => {
+  const context = useContext(ActiveIdContext);
+  if (!context) {
+    throw new Error("useActiveIdContext must be used within ActiveIdProvider");
+  }
+  return context;
+};
+
+export const useJobItemsContext = () => {
+  const context = useContext(JobItemsContext);
+  if (!context) {
+    throw new Error("useJobItemsContext must be used within JobItemsProvider");
+  }
+  return context;
+};
+
+export const useSearchTextContext = () => {
+  const context = useContext(SearchTextContext);
+  if (!context) {
+    throw new Error("useSearchTextContext must be used within SearchTextProvider");
+  }
+  return context;
+};
+
+export const useBookmarkContext = () => {
+  const context = useContext(BookmarkContext);
+  if (!context) {
+    throw new Error("useBookmarkContext must be used within BookmarkProvider");
+  }
+  return context;
 }
