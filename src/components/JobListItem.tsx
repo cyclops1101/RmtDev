@@ -7,8 +7,8 @@ interface JobListItemProps {
 }
 
 export default function JobListItem({ jobItem }: JobListItemProps) {
-  const { id, company, title, badgeLetters, daysAgo } = jobItem;
   const isActiveId = useActiveId();
+  const { id, company, title, badgeLetters, daysAgo } = jobItem;
   const activeTag = isActiveId === id ? "job-item--active" : "job-item";
   return (
     <li className={activeTag}>
@@ -21,7 +21,7 @@ export default function JobListItem({ jobItem }: JobListItemProps) {
         </div>
 
         <div className="job-item__right">
-          <BookmarkIcon />
+          <BookmarkIcon id={id} />
           <time className="job-item__time">{daysAgo}d</time>
         </div>
       </a>

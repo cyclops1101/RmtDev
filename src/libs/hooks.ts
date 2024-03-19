@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { jobDetail, jobIndex } from "../services/searchApi";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery } from "@tanstack/react-query";
 import { handleError } from "./utils";
+import { JobItemDetail } from "./types";
 
-export const useJobItems = (searchTerm: string) => {
+export const useSearchQuery = (searchTerm: string) => {
   const { data, isInitialLoading } = useQuery(
     ["job-items", searchTerm],
     async () => (searchTerm ? jobIndex(searchTerm) : null),
@@ -39,6 +40,25 @@ export const useJobItem = (id: number | null) => {
   return [jobItem, isLoading] as const;
 };
 
+export const useJobItems = (ids: number[]) => {
+  const results = useQueries({
+    queries: ids.map((id) => ({
+      queryKey: ["job-item", id],
+      queryFn: async () => jobDetail(id),
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      retry: false,
+      enabled: !!id,
+      onError: handleError,
+    })),
+  });
+  const jobItems = results.map((result) => result.data?.jobItem).filter(jobItem => jobItem !== undefined) as JobItemDetail[];
+
+  const isLoading = results.some((result) => result.isLoading);
+  
+  return { jobItems, isLoading } as const;
+};
+
 export const useActiveId = () => {
   const [activeId, setActiveId] = useState<number | null>(null);
   useEffect(() => {
@@ -65,6 +85,8 @@ export const useActiveJobItem = () => {
   return [jobItem, isLoading] as const;
 };
 
+// utility hooks
+
 export const useDebounce = <T>(value: T, delay = 500): T => {
   const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -76,3 +98,18 @@ export const useDebounce = <T>(value: T, delay = 500): T => {
 
   return debouncedValue;
 };
+
+export function useLocalStorage<T>(
+  key: string,
+  initialValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState(() =>
+    JSON.parse(localStorage.getItem(key) || JSON.stringify(initialValue))
+  );
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [value, key]);
+
+  return [value, setValue] as const;
+}
